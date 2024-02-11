@@ -17,8 +17,7 @@ class Program
 
         // Read all lines from the input file into a string array
         string[] PyAIfile = ReadAllLinesFromFile(inputFilePath);
-
-        //search for the lines containing the header
+        
         bool removeExtdef = false;
         string scriptId = "";
         string scriptString = "";
