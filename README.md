@@ -8,6 +8,8 @@ Will do everything that you would expect it to do when converting between the tw
 
 -Removes spaces in block names
 
+-Supports multiple scripts in the same file
+
 -Comments out PyAI headers and adds the Asc3 header ("script_name" and "script_id"). This way you can just uncomment the PyAI headers after you import and convert the script in PyAI
 
 It should also support all aise commands. 
