@@ -74,10 +74,11 @@ class Program
             }
         }
         //now create a new array with the correct length and copy the contents of the old array inside it, skipping
-        //the lines we want removed and adding script_name and script_id lines after the first header
+        //the lines we want removed and adding script_name and script_id lines after every header
         int asc3Index = 0;
         string[] Asc3file = new string[PyAIfile.Length - lineIndexToRemove + headerLineCount];
-        int LenghtDifference = Asc3file.Length - PyAIfile.Length; // Indexes are dumb. Just start everything from 1!
+        int LenghtDifference = Asc3file.Length - PyAIfile.Length; 
+        // Indexes are stupid. Just start everything from 1!
         for (int i = 0; i < PyAIfile.Length; i++)
         {
             //skip the extdef line at the start if it exists
@@ -85,10 +86,10 @@ class Program
             {
                 continue;
             }
-            //implement header if it exists
+            //implement headers
             if (IsHeader(PyAIfile[i]))
             {
-                //first copy the original header in the first two lines of the file
+                
                 Asc3file[asc3Index] = "#" + PyAIfile[i];
                 scriptString = GetHeaderProperties(PyAIfile[i], true);
                 asc3Index++;
@@ -155,13 +156,13 @@ class Program
             // Check if the line contains "--"
             if (line.Contains("--"))
             {
-                // If the line contains "--", remove all "--" symbols
+                
                 line = line.Replace("--", "");
                 // Prepend ":" to the line
                 line = ":" + line;
             }
 
-            // Remove the first parenthesis symbol only if the line ends with a parenthesis
+            // Remove first paranthesis pair if they exist
             bool endsWithParenthesis = line.EndsWith(")");
             if (endsWithParenthesis)
             {
