@@ -1,4 +1,4 @@
-Converter for ScarCraft 1 aiscripts made by PyAI to the Asc3 format, which is much more easily readable and writable by hand. There already is a way to convert Asc3 scripts to PyAI but not vice-versa, until now.
+Converter for StarCraft 1 aiscripts made by PyAI to the Asc3 format, which is much more easily readable and writable by hand. There already is a way to convert Asc3 scripts to PyAI but not vice-versa, until now.
 Just drag and drop the PyAI script over the executable.
 
 
