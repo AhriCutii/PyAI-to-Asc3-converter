@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 
 class Program
@@ -17,7 +17,8 @@ class Program
 
         // Read all lines from the input file into a string array
         string[] PyAIfile = ReadAllLinesFromFile(inputFilePath);
-        
+
+        //search for the lines containing the header
         bool removeExtdef = false;
         string scriptId = "";
         string scriptString = "";
@@ -51,6 +52,7 @@ class Program
                 if (line.StartsWith("extdef"))
                 {
                     removeExtdef = true;
+                    Console.WriteLine("Script starts with extdef");
                     continue;
                 }
                 else
@@ -68,17 +70,16 @@ class Program
                 }
                 else
                 {
-                    Console.WriteLine(lineIndexToRemove + 1 + " lines to remove");
+                    Console.WriteLine(lineIndexToRemove + 1 + " lines to remove from the start");
                     break;
                 }
             }
         }
         //now create a new array with the correct length and copy the contents of the old array inside it, skipping
-        //the lines we want removed and adding script_name and script_id lines after every header
+        //the lines we want removed and adding script_name and script_id lines after the first header
         int asc3Index = 0;
         string[] Asc3file = new string[PyAIfile.Length - lineIndexToRemove + headerLineCount];
-        int LenghtDifference = Asc3file.Length - PyAIfile.Length; 
-        // Indexes are stupid. Just start everything from 1!
+        int LenghtDifference = Asc3file.Length - PyAIfile.Length; // Indexes are dumb. Just start everything from 1!
         for (int i = 0; i < PyAIfile.Length; i++)
         {
             //skip the extdef line at the start if it exists
@@ -86,10 +87,10 @@ class Program
             {
                 continue;
             }
-            //implement headers
+            //implement header if it exists
             if (IsHeader(PyAIfile[i]))
             {
-                
+                //first copy the original header in the first two lines of the file
                 Asc3file[asc3Index] = "#" + PyAIfile[i];
                 scriptString = GetHeaderProperties(PyAIfile[i], true);
                 asc3Index++;
@@ -106,7 +107,8 @@ class Program
             Asc3file[asc3Index] = PyAIfile[i];
             asc3Index++;
         }
-
+        Console.WriteLine((headerLineCount / 2) + " headers found");
+        Console.WriteLine(PyAIfile.Length + " lines converted");
         // Get the directory and file name of the input file
         string directory = Path.GetDirectoryName(inputFilePath);
         string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(inputFilePath);
@@ -115,7 +117,7 @@ class Program
 
         // Write the modified content to the output file
         WriteToFile(outputFilePath, Asc3file);
-        Console.WriteLine("Convesion done. Press any key to continue . . .");
+        Console.WriteLine("Convesion done. Press Enter to close the program . . .");
         Console.Read();
     }
 
@@ -147,22 +149,39 @@ class Program
 
     static string ConvertLineToAsc3(string line, string scriptMeow)
     {
+            string comment = "";
             // Remove leading tab spaces
             line = line.TrimStart('\t');
+			//if the line contains a comment, do not alter it
+			if(line.Contains("#"))
+			{
+				int commentIndex = line.IndexOf("#");
+                //add a space between the comment and code if the comment starts at the end of the line
+                if (commentIndex == 0)
+                {
+                    comment = line.Substring(commentIndex, line.Length - commentIndex);
+                }
+                else
+                {
+                    comment = " " + line.Substring(commentIndex, line.Length - commentIndex);
+                }
+				line = line.Substring(0, commentIndex);
+				// +/-1 to account for indexes which are stupid
+			}
 
             // Remove commas
             line = line.Replace(",", "");
 
-            // Check if the line contains "--"
+            // Check if the line is a block name "--"
             if (line.Contains("--"))
             {
-                
+                // If the line contains "--", remove all "--" symbols
                 line = line.Replace("--", "");
                 // Prepend ":" to the line
                 line = ":" + line;
             }
 
-            // Remove first paranthesis pair if they exist
+            // Remove the first parenthesis symbol only if the line ends with a parenthesis
             bool endsWithParenthesis = line.EndsWith(")");
             if (endsWithParenthesis)
             {
@@ -183,7 +202,8 @@ class Program
         {
             line = line.Replace(scriptMeow + " ", scriptMeow);
         }
-        return line;
+        line = line.TrimEnd();
+        return line + comment;
     }
     static string GetHeaderProperties(string Meow, bool isFirstLine)
     {
@@ -247,6 +267,7 @@ class Program
             if (count == 0)
             {
                 newFilePath = Path.Combine(directory, fileName + "_asc3" + extension);
+                count++;
             }
             else
             {
